@@ -1,42 +1,188 @@
-[
-  { "h": "你好", "p": "nǐ hǎo", "t": "สวัสดี", "e": "hello" },
-  { "h": "谢谢", "p": "xièxie", "t": "ขอบคุณ", "e": "thank you" },
-  { "h": "再见", "p": "zàijiàn", "t": "ลาก่อน", "e": "goodbye" },
-  { "h": "中国", "p": "zhōngguó", "t": "ประเทศจีน", "e": "China" },
-  { "h": "学生", "p": "xuésheng", "t": "นักเรียน", "e": "student" },
-  { "h": "老师", "p": "lǎoshī", "t": "คุณครู", "e": "teacher" },
-  { "h": "朋友", "p": "péngyou", "t": "เพื่อน", "e": "friend" },
-  { "h": "高兴", "p": "gāoxìng", "t": "ดีใจ / ยินดี", "e": "happy" },
-  { "h": "喜欢", "p": "xǐhuan", "t": "ชอบ", "e": "like" },
-  { "h": "认", "p": "rènshi", "t": "รู้จัก", "e": "know / meet" },
-  { "h": "工作", "p": "gōngzuò", "t": "ทำงาน / งาน", "e": "work / job" },
-  { "h": "医生", "p": "yīshēng", "t": "หมอ / แพทย์", "e": "doctor" },
-  { "h": "医院", "p": "yīyuàn", "t": "โรงพยาบาล", "e": "hospital" },
-  { "h": "买", "p": "mǎi", "t": "ซื้อ", "e": "buy" },
-  { "h": "卖", "p": "mài", "t": "ขาย", "e": "sell" },
-  { "h": "钱", "p": "qián", "t": "เงิน", "e": "money" },
-  { "h": "书", "p": "shū", "t": "หนังสือ", "e": "book" },
-  { "h": "看", "p": "kàn", "t": "ดู / อ่าน / มอง", "e": "read / see / watch" },
-  { "h": "听", "p": "tīng", "t": "ฟัง", "e": "listen" },
-  { "h": "说", "p": "shuō", "t": "พูด", "e": "speak / say" },
-  { "h": "写", "p": "xiě", "t": "เขียน", "e": "write" },
-  { "h": "吃", "p": "chī", "t": "กิน", "e": "eat" },
-  { "h": "喝", "p": "hē", "t": "ดื่ม", "e": "drink" },
-  { "h": "水", "p": "shuǐ", "t": "น้ำ", "e": "water" },
-  { "h": "茶", "p": "chá", "t": "ชา", "e": "tea" },
-  { "h": "饭", "p": "fàn", "t": "ข้าว / อาหาร", "e": "rice / meal" },
-  { "h": "菜", "p": "cài", "t": "กับข้าว / ผัก", "e": "dish / vegetable" },
-  { "h": "苹果", "p": "píngguǒ", "t": "แอปเปิ้ล", "e": "apple" },
-  { "h": "猫", "p": "māo", "t": "แมว", "e": "cat" },
-  { "h": "狗", "p": "gǒu", "t": "สุนัข / หมา", "e": "dog" },
-  { "h": "天气", "p": "tiānqì", "t": "สภาพอากาศ", "e": "weather" },
-  { "h": "热", "p": "rè", "t": "ร้อน", "e": "hot" },
-  { "h": "冷", "p": "lěng", "t": "หนาว / เย็น", "e": "cold" },
-  { "h": "雨", "p": "yǔ", "t": "ฝน", "e": "rain" },
-  { "h": "飞机", "p": "fēijī", "t": "เครื่องบิน", "e": "airplane" },
-  { "h": "火车", "p": "huǒchē", "t": "รถไฟ", "e": "train" },
-  { "h": "汽车", "p": "qìchē", "t": "รถยนต์", "e": "car" },
-  { "h": "路", "p": "lù", "t": "ถนน / ทาง", "e": "road / path" },
-  { "h": "城市", "p": "chéngshì", "t": "เมือง", "e": "city" },
-  { "h": "国家", "p": "guójiā", "t": "ประเทศ", "e": "country" }
-]
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chinese-Thai-English Flashcards</title>
+<style>
+  :root { --bg:#f8fafc; --card:#ffffff; --ink:#0f172a; --muted:#64748b; --primary:#2563eb; --border:#e2e8f0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); margin:0; padding:20px; display:flex; justify-content:center; }
+  .container { width:100%; max-width:500px; }
+  header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; }
+  h1 { font-size:1.1rem; margin:0; }
+  .stats { font-size:0.85rem; color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px 20px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); cursor: pointer; min-height: 220px; display: flex; flex-direction: column; justify-content: center; position: relative; transition: transform 0.2s; margin-bottom: 15px; }
+  .card:active { transform: scale(0.98); }
+  .hanzi { font-size: 3.5rem; margin-bottom: 6px; font-weight: 600; }
+  .pinyin { font-size: 1.1rem; color: var(--primary); margin-bottom: 12px; display: none; }
+  .translation-box { display: none; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; text-align: left; }
+  .lang-row { display: flex; margin-bottom: 4px; font-size: 0.95rem; }
+  .lang-label { font-weight: bold; width: 70px; color: var(--muted); }
+  .lang-val { color: var(--ink); flex: 1; }
+  .card.revealed .pinyin, .card.revealed .translation-box { display: block; }
+  .card.revealed .hint-tap { display: none; }
+  .hint-tap { font-size: 0.75rem; color: var(--muted); position: absolute; bottom: 12px; width: 100%; left:0; }
+  .actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+  button { padding: 12px 8px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+  button:hover { background: #f1f5f9; }
+  .btn-again { color: #dc2626; border-color: #fca5a5; }
+  .btn-hard { color: #d97706; border-color: #fde68a; }
+  .btn-good { color: #2563eb; border-color: #bfdbfe; }
+  .btn-easy { color: #16a34a; border-color: #bbf7d0; }
+  .audio-btn { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.25rem; cursor: pointer; padding: 8px; }
+  .panel { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 15px; font-size: 0.85rem; color: var(--muted); margin-top: 15px; }
+  input[type="file"] { display: none; }
+  .upload-label { display: block; text-align: center; background: #f1f5f9; padding: 10px; border-radius: 8px; cursor: pointer; color: var(--ink); font-weight: 600; margin-top: 8px; }
+  .upload-label:hover { background: #e2e8f0; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>🇨🇳 🇹🇭 🇬🇧 ศัพท์จีน-ไทย-อังกฤษ</h1>
+    <div class="stats" id="stats">คำศัพท์: 0</div>
+  </header>
+
+  <div class="card" id="flashcard" onclick="toggleCard()">
+    <button class="audio-btn" onclick="event.stopPropagation(); playAudio()" title="ฟังเสียง">🔊</button>
+    <div class="hanzi" id="cardHanzi">你好</div>
+    <div class="pinyin" id="cardPinyin">nǐ hǎo</div>
+    
+    <div class="translation-box" id="translationBox">
+      <div class="lang-row">
+        <span class="lang-label">ไทย:</span>
+        <span class="lang-val" id="cardThai">สวัสดี</span>
+      </div>
+      <div class="lang-row">
+        <span class="lang-label">English:</span>
+        <span class="lang-val" id="cardEnglish">hello</span>
+      </div>
+    </div>
+    
+    <div class="hint-tap">แตะการ์ดเพื่อพลิกดูความหมาย</div>
+  </div>
+
+  <div class="actions" id="actionButtons" style="display:none;">
+    <button class="btn-again" onclick="gradeCard()">อีกครั้ง</button>
+    <button class="btn-hard" onclick="gradeCard()">ยาก</button>
+    <button class="btn-good" onclick="gradeCard()">ดี</button>
+    <button class="btn-easy" onclick="gradeCard()">ง่าย</button>
+  </div>
+
+  <div class="panel">
+    <b>ต้องการเพิ่มคำศัพท์จำนวนมาก (ถึง 10,000+ คำ)?</b>
+    <p style="margin: 6px 0 10px 0;">คุณสามารถนำเข้าไฟล์ JSON ที่มีข้อมูลจีน พินอิน ไทย และอังกฤษได้ทันที</p>
+    <label class="upload-label">
+      📁 เลือกไฟล์คำศัพท์ (JSON)
+      <input type="file" id="fileInput" accept=".json" onchange="loadCustomFile(event)">
+    </label>
+  </div>
+</div>
+
+<script>
+let vocabList = [
+  { h: "你好", p: "nǐ hǎo", t: "สวัสดี", e: "hello" },
+  { h: "谢谢", p: "xièxie", t: "ขอบคุณ", e: "thank you" },
+  { h: "再见", p: "zàijiàn", t: "ลาก่อน", e: "goodbye" },
+  { h: "中国", p: "zhōngguó", t: "ประเทศจีน", e: "China" },
+  { h: "学生", p: "xuésheng", t: "นักเรียน", e: "student" },
+  { h: "老师", p: "lǎoshī", t: "คุณครู", e: "teacher" },
+  { h: "学习", p: "xuéxí", t: "เรียน / ศึกษา", e: "to study / learn" },
+  { h: "汉字", p: "hànzì", t: "ตัวอักษรจีน", e: "Chinese character" },
+  { h: "手机", p: "shǒujī", t: "โทรศัพท์มือถือ", e: "mobile phone" },
+  { h: "电脑", p: "diànnǎo", t: "คอมพิวเตอร์", e: "computer" }
+];
+
+let currentIndex = 0;
+let isRevealed = false;
+
+if (localStorage.getItem("zh_th_custom_deck")) {
+  try {
+    const saved = JSON.parse(localStorage.getItem("zh_th_custom_deck"));
+    if (saved.length > 0) vocabList = saved;
+  } catch(e) {}
+}
+
+function updateStats() {
+  document.getElementById("stats").textContent = "คำศัพท์: " + vocabList.length + " คำ";
+}
+
+function loadCard() {
+  isRevealed = false;
+  document.getElementById("flashcard").classList.remove("revealed");
+  document.getElementById("actionButtons").style.display = "none";
+
+  if (vocabList.length === 0) return;
+
+  currentIndex = Math.floor(Math.random() * vocabList.length);
+  const word = vocabList[currentIndex];
+  document.getElementById("cardHanzi").textContent = word.h;
+  document.getElementById("cardPinyin").textContent = word.p || "";
+  document.getElementById("cardThai").textContent = word.t || "-";
+  document.getElementById("cardEnglish").textContent = word.e || "-";
+}
+
+function toggleCard() {
+  isRevealed = !isRevealed;
+  const card = document.getElementById("flashcard");
+  if (isRevealed) {
+    card.classList.add("revealed");
+    document.getElementById("actionButtons").style.display = "grid";
+    playAudio();
+  } else {
+    card.classList.remove("revealed");
+    document.getElementById("actionButtons").style.display = "none";
+  }
+}
+
+function gradeCard() {
+  loadCard();
+}
+
+function playAudio() {
+  const word = vocabList[currentIndex];
+  if ('speechSynthesis' in window && word && word.h) {
+    const utterance = new SpeechSynthesisUtterance(word.h);
+    utterance.lang = 'zh-CN';
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+function loadCustomFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const json = JSON.parse(e.target.result);
+      const rawArray = Array.isArray(json) ? json : (json.words || json.data || []);
+      const parsedData = rawArray.map(item => ({
+        h: item.h || item.hanzi || item.word || "",
+        p: item.p || item.pinyin || "",
+        t: item.t || item.thai || item.meaning_th || "",
+        e: item.e || item.english || item.definition || ""
+      })).filter(x => x.h);
+
+      if (parsedData.length > 0) {
+        vocabList = parsedData;
+        localStorage.setItem("zh_th_custom_deck", JSON.stringify(vocabList));
+        updateStats();
+        loadCard();
+        alert("โหลดคำศัพท์สำเร็จจำนวน " + vocabList.length + " คำ!");
+      } else {
+        alert("ไม่พบข้อมูลคำศัพท์ที่ถูกต้องในไฟล์ JSON นี้");
+      }
+    } catch(err) {
+      alert("เกิดข้อผิดพลาดในการอ่านไฟล์: " + err.message);
+    }
+  };
+  reader.readAsText(file, "utf-8");
+}
+
+updateStats();
+loadCard();
+</script>
+
+</body>
+</html>
