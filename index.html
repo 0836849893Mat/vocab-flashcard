@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>✨ สนุกเรียนคำศัพท์จีน ✨</title>
+<title id="pageBrowserTitle">✨ สนุกเรียนคำศัพท์ ✨</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap');
 
@@ -27,12 +27,40 @@
     justify-content: center;
     align-items: center;
     padding: 15px;
+    transition: background 0.4s ease;
   }
 
   .container {
     width: 100%;
     max-width: 420px;
     text-align: center;
+  }
+
+  /* Language Switcher Tabs */
+  .tab-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .tab {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.7);
+    color: #64748b;
+    border: none;
+    transition: all 0.2s;
+    font-family: 'Prompt', sans-serif;
+  }
+
+  .tab.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
 
   header {
@@ -78,7 +106,7 @@
   .card:active { transform: scale(0.98); }
 
   .hanzi {
-    font-size: 4.5rem;
+    font-size: 4rem;
     margin-bottom: 5px;
     font-weight: 700;
     color: #1e293b;
@@ -103,7 +131,7 @@
 
   .lang-thai {
     font-size: 1.1rem;
-    color: #db2777;
+    color: var(--primary);
     font-weight: 600;
     margin-bottom: 4px;
   }
@@ -151,6 +179,7 @@
     align-items: center;
     justify-content: center;
     transition: background 0.2s;
+    z-index: 2;
   }
   .audio-btn:hover { background: #fce7f3; }
 
@@ -179,9 +208,9 @@
   .btn-primary {
     background: var(--primary);
     color: white;
-    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
   }
-  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-primary:hover { opacity: 0.9; }
 
   /* Panel */
   .panel {
@@ -212,8 +241,14 @@
 <body>
 
 <div class="container">
+  <!-- Language Switcher Tabs -->
+  <div class="tab-bar">
+    <button class="tab active" id="tabZh" onclick="switchLanguage('zh')">🇨🇳 คำศัพท์จีน</button>
+    <button class="tab" id="tabEn" onclick="switchLanguage('en')">🇬🇧 คำศัพท์อังกฤษ</button>
+  </div>
+
   <header>
-    <h1>🌸 คลังคำศัพท์จีน 🌸</h1>
+    <h1 id="mainTitle">🌸 คลังคำศัพท์จีน 🌸</h1>
     <div class="stats" id="stats">คำที่ 1 / 10</div>
   </header>
 
@@ -228,7 +263,7 @@
       <div class="lang-eng" id="cardEnglish">hello</div>
     </div>
     
-    <div class="hint-tap">👆 แตะการ์ดเพื่อดูคำแปล</div>
+    <div class="hint-tap" id="hintText">👆 แตะการ์ดเพื่อดูคำแปล</div>
   </div>
 
   <!-- Navigation Buttons -->
@@ -239,7 +274,7 @@
 
   <!-- Upload Panel -->
   <div class="panel">
-    <span>เปลี่ยนชุดคำศัพท์ (รองรับไฟล์ JSON):</span>
+    <span id="uploadHint">เปลี่ยนชุดคำศัพท์ (รองรับไฟล์ JSON):</span>
     <label class="upload-label">
       📁 เลือกไฟล์คำศัพท์
       <input type="file" id="fileInput" accept=".json" onchange="loadCustomFile(event)">
@@ -248,27 +283,77 @@
 </div>
 
 <script>
-let vocabList = [
-  { h: "你好", p: "nǐ hǎo", t: "สวัสดี", e: "hello" },
-  { h: "谢谢", p: "xièxie", t: "ขอบคุณ", e: "thank you" },
-  { h: "再见", p: "zàijiàn", t: "ลาก่อน", e: "goodbye" },
-  { h: "中国", p: "zhōngguó", t: "ประเทศจีน", e: "China" },
-  { h: "学生", p: "xuésheng", t: "นักเรียน", e: "student" },
-  { h: "老师", p: "lǎoshī", t: "คุณครู", e: "teacher" },
-  { h: "学习", p: "xuéxí", t: "เรียน / ศึกษา", e: "to study / learn" },
-  { h: "汉字", p: "hànzì", t: "ตัวอักษรจีน", e: "Chinese character" },
-  { h: "手机", p: "shǒujī", t: "โทรศัพท์มือถือ", e: "mobile phone" },
-  { h: "电脑", p: "diànnǎo", t: "คอมพิวเตอร์", e: "computer" }
-];
+// ข้อมูลคำศัพท์ทั้ง 2 ภาษา
+const decks = {
+  zh: [
+    { h: "你好", p: "nǐ hǎo", t: "สวัสดี", e: "hello" },
+    { h: "谢谢", p: "xièxie", t: "ขอบคุณ", e: "thank you" },
+    { h: "再见", p: "zàijiàn", t: "ลาก่อน", e: "goodbye" },
+    { h: "中国", p: "zhōngguó", t: "ประเทศจีน", e: "China" },
+    { h: "学生", p: "xuésheng", t: "นักเรียน", e: "student" },
+    { h: "老师", p: "lǎoshī", t: "คุณครู", e: "teacher" },
+    { h: "学习", p: "xuéxí", t: "เรียน / ศึกษา", e: "to study / learn" },
+    { h: "汉字", p: "hànzì", t: "ตัวอักษรจีน", e: "Chinese character" },
+    { h: "手机", p: "shǒujī", t: "โทรศัพท์มือถือ", e: "mobile phone" },
+    { h: "电脑", p: "diànnǎo", t: "คอมพิวเตอร์", e: "computer" }
+  ],
+  en: [
+    { h: "Hello", p: "/həˈloʊ/", t: "สวัสดี", e: "Hello, nice to meet you." },
+    { h: "Thank you", p: "/ˈθæŋk juː/", t: "ขอบคุณ", e: "Thank you very much." },
+    { h: "Goodbye", p: "/ɡʊdˈbaɪ/", t: "ลาก่อน", e: "Goodbye, see you later." },
+    { h: "Student", p: "/ˈstjuːdnt/", t: "นักเรียน", e: "I am a student." },
+    { h: "Teacher", p: "/ˈtiːtʃər/", t: "คุณครู", e: "She is an English teacher." },
+    { h: "Apple", p: "/ˈæpl/", t: "แอปเปิ้ล", e: "An apple a day keeps the doctor away." },
+    { h: "Computer", p: "/kəmˈpjuːtər/", t: "คอมพิวเตอร์", e: "I use a computer to study." },
+    { h: "Friend", p: "/frend/", t: "เพื่อน", e: "You are my best friend." },
+    { h: "Beautiful", p: "/ˈbjuːtɪfl/", t: "สวยงาม", e: "What a beautiful day!" },
+    { h: "Happy", p: "/ˈhæpi/", t: "มีความสุข", e: "I am very happy today." }
+  ]
+};
 
+let currentLang = 'zh';
+let vocabList = decks.zh;
 let currentIndex = 0;
 let isRevealed = false;
 
+// โหลดข้อมูลที่เซฟไว้ใน localStorage (ถ้ามี)
 if (localStorage.getItem("zh_cute_deck")) {
-  try {
-    const saved = JSON.parse(localStorage.getItem("zh_cute_deck"));
-    if (saved.length > 0) vocabList = saved;
-  } catch(e) {}
+  try { decks.zh = JSON.parse(localStorage.getItem("zh_cute_deck")); } catch(e) {}
+}
+if (localStorage.getItem("en_cute_deck")) {
+  try { decks.en = JSON.parse(localStorage.getItem("en_cute_deck")); } catch(e) {}
+}
+
+function switchLanguage(lang) {
+  currentLang = lang;
+  currentIndex = 0;
+  vocabList = decks[currentLang];
+
+  // สลับธีมสีและข้อความตามภาษา
+  if (lang === 'zh') {
+    document.documentElement.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #fce7f3 0%, #e0e7ff 100%)');
+    document.documentElement.style.setProperty('--primary', '#ec4899');
+    document.documentElement.style.setProperty('--primary-hover', '#db2777');
+    document.documentElement.style.setProperty('--secondary', '#6366f1');
+    document.getElementById("mainTitle").textContent = "🌸 คลังคำศัพท์จีน 🌸";
+    document.getElementById("pageBrowserTitle").textContent = "✨ สนุกเรียนคำศัพท์จีน ✨";
+    document.getElementById("uploadHint").textContent = "เปลี่ยนชุดคำศัพท์จีน (รองรับไฟล์ JSON):";
+    document.getElementById("hintText").textContent = "👆 แตะการ์ดเพื่อดูคำแปล";
+    document.getElementById("tabZh").className = "tab active";
+    document.getElementById("tabEn").className = "tab";
+  } else {
+    document.documentElement.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #e0f2fe 0%, #fae8ff 100%)');
+    document.documentElement.style.setProperty('--primary', '#8b5cf6');
+    document.documentElement.style.setProperty('--primary-hover', '#7c3aed');
+    document.documentElement.style.setProperty('--secondary', '#0ea5e9');
+    document.getElementById("mainTitle").textContent = "✨ คลังคำศัพท์อังกฤษ ✨";
+    document.getElementById("pageBrowserTitle").textContent = "✨ สนุกเรียนคำศัพท์อังกฤษ ✨";
+    document.getElementById("uploadHint").textContent = "เปลี่ยนชุดคำศัพท์อังกฤษ (รองรับไฟล์ JSON):";
+    document.getElementById("hintText").textContent = "👆 แตะการ์ดเพื่อดูคำแปลและประโยค";
+    document.getElementById("tabZh").className = "tab";
+    document.getElementById("tabEn").className = "tab active";
+  }
+  updateUI();
 }
 
 function updateUI() {
@@ -281,7 +366,7 @@ function updateUI() {
   document.getElementById("cardHanzi").textContent = word.h;
   document.getElementById("cardPinyin").textContent = word.p || "";
   document.getElementById("cardThai").textContent = word.t || "-";
-  document.getElementById("cardEnglish").textContent = word.e || "-";
+  document.getElementById("cardEnglish").textContent = word.e || "";
 }
 
 function toggleCard() {
@@ -311,26 +396,44 @@ function playAudio() {
 
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(word.h);
-  utterance.lang = 'zh-CN';
-  
-  // Tuning for clarity and pleasant student pacing
-  utterance.rate = 0.82; 
-  utterance.pitch = 1.05; 
 
-  const voices = window.speechSynthesis.getVoices();
-  const chineseVoices = voices.filter(v => v.lang.toLowerCase().includes('zh') || v.lang.toLowerCase().includes('cmn'));
-  
-  if (chineseVoices.length > 0) {
-    // Priority search: Specifically look for "Ting-Ting" or Apple/Google high-clarity female voices first
-    const tingTingVoice = chineseVoices.find(v => 
-      v.name.includes('Ting-Ting') || 
-      v.name.includes('Tingting') || 
-      v.name.includes('Xiaoxiao') || 
-      v.name.includes('Yaoyao') ||
-      v.name.includes('Female')
-    ) || chineseVoices[0];
-    
-    utterance.voice = tingTingVoice;
+  if (currentLang === 'zh') {
+    utterance.lang = 'zh-CN';
+    utterance.rate = 0.82; 
+    utterance.pitch = 1.05; 
+
+    const voices = window.speechSynthesis.getVoices();
+    const chineseVoices = voices.filter(v => v.lang.toLowerCase().includes('zh') || v.lang.toLowerCase().includes('cmn'));
+    if (chineseVoices.length > 0) {
+      const tingTingVoice = chineseVoices.find(v => 
+        v.name.includes('Ting-Ting') || 
+        v.name.includes('Tingting') || 
+        v.name.includes('Xiaoxiao') || 
+        v.name.includes('Yaoyao') ||
+        v.name.includes('Female')
+      ) || chineseVoices[0];
+      utterance.voice = tingTingVoice;
+    }
+  } else {
+    // เสียงภาษาอังกฤษแบบนุ่มนวล เป็นธรรมชาติ ชัดเจนสำหรับผู้เรียน
+    utterance.lang = 'en-US';
+    utterance.rate = 0.88; 
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const englishVoices = voices.filter(v => v.lang.toLowerCase().includes('en'));
+    if (englishVoices.length > 0) {
+      // ค้นหาเสียงผู้หญิงหรือเสียงธรรมชาติ (เช่น Samantha, Karen, Victoria หรือ Google US English)
+      const politeEnglishVoice = englishVoices.find(v => 
+        v.name.includes('Samantha') || 
+        v.name.includes('Karen') || 
+        v.name.includes('Victoria') || 
+        v.name.includes('Natural') || 
+        v.name.includes('Female') ||
+        v.name.includes('Zira')
+      ) || englishVoices[0];
+      utterance.voice = politeEnglishVoice;
+    }
   }
 
   window.speechSynthesis.speak(utterance);
@@ -350,16 +453,17 @@ function loadCustomFile(event) {
       const json = JSON.parse(e.target.result);
       const rawArray = Array.isArray(json) ? json : (json.words || json.data || []);
       const parsedData = rawArray.map(item => ({
-        h: item.h || item.hanzi || item.word || "",
-        p: item.p || item.pinyin || "",
-        t: item.t || item.thai || item.meaning_th || "",
+        h: item.h || item.hanzi || item.word || item.en || "",
+        p: item.p || item.pinyin || item.phonetic || item.ph || "",
+        t: item.t || item.thai || item.meaning || item.th || "",
         e: item.e || item.english || item.definition || ""
       })).filter(x => x.h);
 
       if (parsedData.length > 0) {
+        decks[currentLang] = parsedData;
         vocabList = parsedData;
         currentIndex = 0;
-        localStorage.setItem("zh_cute_deck", JSON.stringify(vocabList));
+        localStorage.setItem(currentLang === 'zh' ? "zh_cute_deck" : "en_cute_deck", JSON.stringify(vocabList));
         updateUI();
         alert("🎉 โหลดคำศัพท์สำเร็จ " + vocabList.length + " คำ!");
       } else {
